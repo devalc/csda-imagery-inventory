@@ -1,0 +1,13 @@
+.env
+.venv/
+outputs/
+data/
+cache/
+*.pem
+*.key
+__pycache__/
+*.py[cod]
+.DS_Store
+.Rhistory
+.ipynb_checkpoints/
+

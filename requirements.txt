@@ -1,0 +1,6 @@
+httpx>=0.28.1
+pandas>=2.2
+shapely>=2.0
+pyproj>=3.7
+git+https://github.com/NASA-IMPACT/csda-client
+

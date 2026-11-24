@@ -1,0 +1,28 @@
+{
+  "imagery_collections": [
+    "planet",
+    "satellogic",
+    "blacksky",
+    "airbus",
+    "airbus-optical",
+    "desis",
+    "maxar-legion"
+  ],
+  "areas": {
+    "example_area": [
+      {
+        "name": "pre_event",
+        "start": "2026-06-01",
+        "end": "2026-06-30",
+        "description": "Baseline before the event"
+      },
+      {
+        "name": "event_and_after",
+        "start": "2026-07-01",
+        "end": "2026-08-20",
+        "description": "Event and initial response period"
+      }
+    ]
+  }
+}
+
