@@ -1,25 +1,12 @@
 # Reusable NASA CSDA metadata inventory workflow
 
-A small, configuration-driven toolkit for answering:
+Python scripts and Jupyter notebooks for searching NASA Commercial SmallSat Data Acquisition (CSDA) catalog metadata by area of interest (AOI) and date range. The event-window workflow identifies imagery records within, before, and after user-defined periods.
 
-- What CSDA catalog records intersect my area of interest?
-- Which vendors and collections are visible for my Earthdata/CSDA account?
-- What imagery exists before, during, and after an event date?
-- What are the nearest catalog observations when an exact window is empty?
+## Catalog search and account access
 
-The workflow is **metadata-only**. It contains no imagery download, order, archive-request, or satellite-tasking functions.
+The inventory queries the public CSDA STAC catalog and separately records vendor entitlements from the authenticated CSDA account. Catalog results describe the records returned for the selected collections, AOI, and dates. Zero results indicate that the query returned no matching records.
 
-## Important interpretation
-
-The CSDA STAC catalog is used for item discovery. Authentication is still meaningful: the scripts separately verify the Earthdata login and save a sanitized account entitlement summary. Keep these concepts distinct:
-
-1. **Catalog-visible** — item metadata was returned for the AOI and dates.
-2. **Account approved** — the authenticated CSDA profile lists a vendor entitlement.
-3. **Immediately downloadable** — not established by this workflow.
-4. **Archive/order required** — not tested.
-5. **Taskable** — not tested and never attempted.
-
-A zero-result query does not prove a vendor has no imagery. It may reflect acquisition history, AOI geometry, dates, collection mapping, catalog latency, embargo rules, or entitlement/workflow differences.
+The workflow covers catalog discovery and account reporting. Asset downloads, archive requests, orders, and satellite tasking are outside its scope.
 
 ## Repository layout
 
@@ -129,7 +116,7 @@ Place a longitude/latitude GeoJSON file in `aoi/`, then edit `config/areas.json`
 }
 ```
 
-Set `collections` to `null` to query every collection advertised by the current CSDA STAC endpoint. Large collections can take time; `max_items_per_collection` is an explicit safety cap, and truncation is recorded in `pagination_audit.json`.
+Set `collections` to `null` to query all collections advertised by the CSDA STAC endpoint. The `max_items_per_collection` setting limits the number of records retrieved per collection. The pagination audit records truncated searches.
 
 Run the inventory:
 
@@ -182,37 +169,11 @@ This creates:
 - `outputs/event_window_summary.csv`
 - `outputs/event_window_candidates.csv`
 
-Candidate rows are labeled `in_window`, `nearest_before`, or `nearest_after`. In-window rows are ranked using reported cloud cover, AOI coverage, and recency. These are metadata rankings—not scientific image-quality validation.
-
-## Reusing it elsewhere
-
-For a new study you normally change only:
-
-1. GeoJSON files in `aoi/`.
-2. AOI IDs and catalog dates in `config/areas.json`.
-3. Event dates in `config/event_windows.json`.
-4. The collection lists, if you want to limit runtime.
-
-No source-code edits should be required.
-
-## What is intentionally excluded
-
-- Real credentials or tokens
-- AOIs that should not be public
-- Downloaded commercial imagery
-- Raw API caches and signed URLs
-- Executed notebooks and bulky plots
-- Stakeholder-specific reports
-- Experimental scene-selection code
-- Asset download, ordering, or tasking code
-
-Before publishing, run `git status` and confirm that `.env`, `outputs/`, `data/`, and private AOIs are absent.
+Candidate rows are labeled `in_window`, `nearest_before`, or `nearest_after`. In-window rows are ranked using reported cloud cover, AOI coverage, and recency.
 
 ## Known limitations
 
-- Bounding boxes are used for STAC requests; exact geometry intersection is applied locally afterward.
+- STAC requests use bounding boxes. The workflow then checks intersection with the AOI geometry locally.
 - Metadata field conventions vary by vendor and collection.
 - Cloud percentage and GSD are included only when the item exposes them.
-- Catalog visibility and account entitlement are separate signals.
-- WorldView-derived EarthDEM products are not equivalent to WorldView optical imagery.
-- The workflow inventories existing metadata only; it cannot determine future acquisition feasibility.
+- EarthDEM products derived from WorldView imagery are elevation products.
